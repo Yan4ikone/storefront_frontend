@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Фирменные цвета — временная нейтральная схема (бренда/гайдлайна пока нет).
+  Чтобы сменить палитру под будущий бренд, достаточно поправить значения ниже —
+  компоненты используют только имена (brand / accent / ink / muted / surface / border),
+  а не конкретные hex-коды.
+*/
+:root {
+  --brand: #1e293b; /* основной тёмный (шапка, кнопки, футер) */
+  --brand-dark: #0f172a;
+  --brand-light: #334155;
+
+  --accent: #f97316; /* акцентный (CTA, цены, бейджи) */
+  --accent-dark: #c2410c;
+
+  --ink: #0f172a; /* основной текст */
+  --muted: #64748b; /* второстепенный текст */
+  --surface: #f8fafc; /* фон секций */
+  --border-color: #e2e8f0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--ink);
+  background: #ffffff;
+}
