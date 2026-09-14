@@ -94,16 +94,15 @@ export default function CartPage() {
                 <span className="text-muted">Итого</span>
                 <span className="text-xl font-bold">{formatPrice(totalPrice)}</span>
               </div>
-              <button
-                type="button"
-                disabled
-                title="Оформление заказа появится на следующем этапе, после подключения бэкенда"
-                className="w-full h-11 rounded-card bg-brand/40 text-white font-semibold cursor-not-allowed"
+              <Link
+                href="/checkout"
+                className="block w-full h-11 rounded-card bg-brand hover:bg-brand-dark transition-colors text-white font-semibold flex items-center justify-center"
               >
                 Оформить заказ
-              </button>
+              </Link>
               <p className="text-xs text-muted mt-2">
-                Оформление заказа появится на следующем этапе — после подключения бэкенда.
+                Онлайн-оплата и расчёт доставки появятся позже — пока заказ передаётся
+                менеджеру, который свяжется с вами для подтверждения.
               </p>
             </div>
           </div>

@@ -4,27 +4,23 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ProductCard from "@/components/ProductCard";
 import ProductActions from "@/components/ProductActions";
 import { ImageOff } from "lucide-react";
-import {
-  getCategoryBySlug,
-  getProductBySlug,
-  getRelatedProducts,
-} from "@/lib/mock-data";
+import { getCategoryBySlug, getProductBySlug } from "@/lib/api";
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
-}): Metadata {
-  const product = getProductBySlug(params.slug);
+}): Promise<Metadata> {
+  const product = await getProductBySlug(params.slug);
   return { title: product ? `${product.name} — МобДетали` : "Товар не найден" };
 }
 
-export default function ProductPage({ params }: { params: { slug: string } }) {
-  const product = getProductBySlug(params.slug);
+export default async function ProductPage({ params }: { params: { slug: string } }) {
+  const product = await getProductBySlug(params.slug);
   if (!product) notFound();
 
-  const category = getCategoryBySlug(product.categorySlug);
-  const related = getRelatedProducts(product);
+  const category = await getCategoryBySlug(product.categorySlug);
+  const related = product.related;
 
   return (
     <main>

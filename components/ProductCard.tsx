@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ImageOff, ShoppingCart, Check } from "lucide-react";
 import { useState } from "react";
-import type { Product } from "@/lib/mock-data";
+import type { Product } from "@/lib/api";
 import { useCart } from "@/lib/cart-context";
 
 function formatPrice(value: number) {

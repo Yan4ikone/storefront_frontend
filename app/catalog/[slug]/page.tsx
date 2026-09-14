@@ -2,22 +2,22 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProductCard from "@/components/ProductCard";
-import { getCategoryBySlug, getProductsByCategory } from "@/lib/mock-data";
+import { getCategoryBySlug, getProducts } from "@/lib/api";
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
-}): Metadata {
-  const category = getCategoryBySlug(params.slug);
+}): Promise<Metadata> {
+  const category = await getCategoryBySlug(params.slug);
   return { title: category ? `${category.name} — МобДетали` : "Раздел не найден" };
 }
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
-  const category = getCategoryBySlug(params.slug);
+export default async function CategoryPage({ params }: { params: { slug: string } }) {
+  const category = await getCategoryBySlug(params.slug);
   if (!category) notFound();
 
-  const items = getProductsByCategory(category.slug);
+  const items = await getProducts(category.slug);
 
   return (
     <main>
@@ -30,13 +30,10 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
       />
 
       <div className="max-w-container mx-auto px-4 py-8">
-        <div className="flex items-baseline justify-between mb-6 gap-4 flex-wrap">
-          <h1 className="text-2xl font-bold">{category.name}</h1>
-          <p className="text-sm text-muted">{items.length} товаров в наличии</p>
-        </div>
+        <h1 className="text-2xl font-bold mb-6">{category.name}</h1>
 
         <div className="grid md:grid-cols-[240px_1fr] gap-8">
-          {/* Фильтры — визуальный макет, без реальной логики (появится вместе с API) */}
+          {/* Фильтры — визуальный макет, без реальной логики (появится вместе с поиском) */}
           <aside className="hidden md:block">
             <div className="rounded-card border border-border p-4 mb-4">
               <p className="font-semibold text-sm mb-3">Совместимость</p>

@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { Search, ShoppingCart, Phone, User } from "lucide-react";
-import { categories } from "@/lib/mock-data";
+import type { Category } from "@/lib/api";
 import { useCart } from "@/lib/cart-context";
 
-export default function Header() {
+export default function Header({ categories }: { categories: Category[] }) {
   const { totalCount } = useCart();
 
   return (

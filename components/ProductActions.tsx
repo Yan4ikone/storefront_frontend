@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Minus, Plus, ShoppingCart, Check } from "lucide-react";
-import type { Product } from "@/lib/mock-data";
+import type { Product } from "@/lib/api";
 import { useCart } from "@/lib/cart-context";
 
 function formatPrice(value: number) {

@@ -1,9 +1,9 @@
 "use client";
 
-// Простое хранилище корзины на клиенте (React Context + localStorage).
-// Это решение для этапа "фронтенд без бэкенда": корзина живёт в браузере
-// пользователя. Когда появится API (раздел 6 плана), корзина переедет на сервер
-// (сущности Cart/CartItem, раздел 5), а этот контекст останется обёрткой над запросами.
+// Хранилище корзины на клиенте (React Context + localStorage) — сама корзина
+// по-прежнему живёт в браузере пользователя, серверных Cart/CartItem (раздел 5)
+// пока нет. На сервер она уходит только один раз, при оформлении заказа
+// (app/checkout, lib/api.ts createOrder) — там же и очищается после успеха.
 
 import {
   createContext,
@@ -13,7 +13,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Product } from "./mock-data";
+import type { Product } from "./api";
 
 export interface CartItem {
   slug: string;
@@ -34,6 +34,7 @@ interface CartContextValue {
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
+
 const STORAGE_KEY = "storefront-cart";
 
 export function CartProvider({ children }: { children: ReactNode }) {
