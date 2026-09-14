@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="bg-brand-dark text-white/70">
@@ -13,24 +15,29 @@ export default function Footer() {
           <p className="text-white font-semibold mb-3">Покупателям</p>
           <ul className="space-y-2">
             <li>
-              <a href="#" className="hover:text-white">
+              <Link href="/how-to-order" className="hover:text-white">
                 Как оформить заказ
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white">
+              <Link href="/delivery" className="hover:text-white">
                 Оплата и доставка
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white">
+              <Link href="/warranty" className="hover:text-white">
                 Гарантия
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-white">
+              <Link href="/catalog" className="hover:text-white">
                 Прайс-лист
-              </a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/contacts" className="hover:text-white">
+                Контакты
+              </Link>
             </li>
           </ul>
         </div>
@@ -74,9 +81,14 @@ export default function Footer() {
       <div className="border-t border-white/10">
         <div className="max-w-container mx-auto px-4 py-4 text-xs flex flex-col sm:flex-row gap-2 sm:justify-between">
           <p>© {new Date().getFullYear()} МобДетали. Все права защищены.</p>
-          <a href="#" className="hover:text-white">
-            Политика конфиденциальности
-          </a>
+          <div className="flex gap-4">
+            <Link href="/privacy" className="hover:text-white">
+              Политика конфиденциальности
+            </Link>
+            <Link href="/cookies" className="hover:text-white">
+              Файлы cookie
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

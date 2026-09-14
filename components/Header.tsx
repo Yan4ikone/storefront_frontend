@@ -4,9 +4,11 @@ import Link from "next/link";
 import { Search, ShoppingCart, Phone, User } from "lucide-react";
 import type { Category } from "@/lib/api";
 import { useCart } from "@/lib/cart-context";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Header({ categories }: { categories: Category[] }) {
   const { totalCount } = useCart();
+  const { status, user } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-border">
@@ -14,15 +16,18 @@ export default function Header({ categories }: { categories: Category[] }) {
       <div className="hidden md:block bg-surface text-sm text-muted">
         <div className="max-w-container mx-auto px-4 flex items-center justify-between h-9">
           <div className="flex gap-5">
-            <a href="#" className="hover:text-ink">
+            <Link href="/about" className="hover:text-ink">
               О магазине
-            </a>
-            <a href="#" className="hover:text-ink">
+            </Link>
+            <Link href="/delivery" className="hover:text-ink">
               Доставка и оплата
-            </a>
-            <a href="#" className="hover:text-ink">
+            </Link>
+            <Link href="/warranty" className="hover:text-ink">
               Гарантия
-            </a>
+            </Link>
+            <Link href="/contacts" className="hover:text-ink">
+              Контакты
+            </Link>
           </div>
           <div className="flex items-center gap-2">
             <Phone size={14} />
@@ -43,27 +48,33 @@ export default function Header({ categories }: { categories: Category[] }) {
         </Link>
 
         <div className="hidden md:flex flex-1 items-center">
-          <div className="relative w-full">
+          <form action="/search" className="relative w-full">
             <input
               type="text"
+              name="q"
               placeholder="Поиск по названию, артикулу или модели устройства…"
               className="w-full rounded-card border border-border bg-surface px-4 py-2.5 pr-11 text-sm outline-none focus:border-brand transition-colors"
             />
-            <Search
-              size={18}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted"
-            />
-          </div>
+            <button
+              type="submit"
+              aria-label="Найти"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-brand"
+            >
+              <Search size={18} />
+            </button>
+          </form>
         </div>
 
         <div className="flex items-center gap-4 md:gap-5 ml-auto md:ml-0">
           <Link
-            href="/login"
+            href={status === "authenticated" ? "/account" : "/login"}
             aria-label="Личный кабинет"
             className="hidden sm:flex flex-col items-center text-ink hover:text-brand transition-colors"
           >
             <User size={22} strokeWidth={1.75} />
-            <span className="text-[11px] leading-none mt-1">Войти</span>
+            <span className="text-[11px] leading-none mt-1">
+              {status === "authenticated" ? user?.name?.split(" ")[0] || "Кабинет" : "Войти"}
+            </span>
           </Link>
           <Link
             href="/cart"
@@ -83,17 +94,21 @@ export default function Header({ categories }: { categories: Category[] }) {
 
       {/* Поиск для мобильной версии */}
       <div className="md:hidden px-4 pb-3">
-        <div className="relative w-full">
+        <form action="/search" className="relative w-full">
           <input
             type="text"
+            name="q"
             placeholder="Поиск по каталогу…"
             className="w-full rounded-card border border-border bg-surface px-4 py-2.5 pr-11 text-sm outline-none focus:border-brand transition-colors"
           />
-          <Search
-            size={18}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted"
-          />
-        </div>
+          <button
+            type="submit"
+            aria-label="Найти"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-brand"
+          >
+            <Search size={18} />
+          </button>
+        </form>
       </div>
 
       {/* Навигация по каталогу */}

@@ -2,7 +2,16 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProductCard from "@/components/ProductCard";
-import { getCategoryBySlug, getProducts } from "@/lib/api";
+import CatalogFilters from "@/components/CatalogFilters";
+import SortSelect from "@/components/SortSelect";
+import { getCategoryBySlug, getCompatibilityModels, getProducts, type ProductSort } from "@/lib/api";
+
+interface CategorySearchParams {
+  compatibility?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  sort?: string;
+}
 
 export async function generateMetadata({
   params,
@@ -13,11 +22,25 @@ export async function generateMetadata({
   return { title: category ? `${category.name} — МобДетали` : "Раздел не найден" };
 }
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: CategorySearchParams;
+}) {
   const category = await getCategoryBySlug(params.slug);
   if (!category) notFound();
 
-  const items = await getProducts(category.slug);
+  const compatibility = searchParams.compatibility?.split(",").filter(Boolean) ?? [];
+  const minPrice = searchParams.minPrice ? Number(searchParams.minPrice) : undefined;
+  const maxPrice = searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined;
+  const sort = (searchParams.sort as ProductSort | undefined) ?? undefined;
+
+  const [items, compatibilityGroups] = await Promise.all([
+    getProducts({ category: category.slug, compatibility, minPrice, maxPrice, sort }),
+    getCompatibilityModels(category.slug),
+  ]);
 
   return (
     <main>
@@ -33,49 +56,26 @@ export default async function CategoryPage({ params }: { params: { slug: string 
         <h1 className="text-2xl font-bold mb-6">{category.name}</h1>
 
         <div className="grid md:grid-cols-[240px_1fr] gap-8">
-          {/* Фильтры — визуальный макет, без реальной логики (появится вместе с поиском) */}
           <aside className="hidden md:block">
-            <div className="rounded-card border border-border p-4 mb-4">
-              <p className="font-semibold text-sm mb-3">Совместимость</p>
-              <div className="space-y-2 text-sm">
-                {category.items.map((item) => (
-                  <label key={item} className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="accent-brand" />
-                    <span>{item}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-card border border-border p-4">
-              <p className="font-semibold text-sm mb-3">Цена, ₽</p>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  placeholder="от"
-                  className="w-full rounded-lg border border-border px-3 py-1.5 text-sm outline-none focus:border-brand"
-                />
-                <span className="text-muted">—</span>
-                <input
-                  type="number"
-                  placeholder="до"
-                  className="w-full rounded-lg border border-border px-3 py-1.5 text-sm outline-none focus:border-brand"
-                />
-              </div>
-            </div>
+            <CatalogFilters
+              compatibilityGroups={compatibilityGroups}
+              selectedCompatibility={compatibility}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+            />
           </aside>
 
           <div>
             <div className="flex items-center justify-end mb-4">
-              <select className="rounded-lg border border-border px-3 py-1.5 text-sm outline-none focus:border-brand">
-                <option>По популярности</option>
-                <option>Сначала дешевле</option>
-                <option>Сначала дороже</option>
-              </select>
+              <SortSelect sort={sort} />
             </div>
 
             {items.length === 0 ? (
-              <p className="text-muted">В этом разделе пока нет товаров.</p>
+              <p className="text-muted">
+                {compatibility.length || minPrice != null || maxPrice != null
+                  ? "По этим фильтрам ничего не нашлось."
+                  : "В этом разделе пока нет товаров."}
+              </p>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {items.map((product) => (
