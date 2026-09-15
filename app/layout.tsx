@@ -6,7 +6,7 @@ import SiteChrome from "@/components/SiteChrome";
 import { getCategories } from "@/lib/api";
 
 export const metadata: Metadata = {
-  title: "МобДетали — запчасти и аксессуары для смартфонов",
+  title: "ScreenHub — запчасти и аксессуары для смартфонов",
   description:
     "Интернет-магазин запчастей, инструментов и аксессуаров для смартфонов и ноутбуков.",
 };

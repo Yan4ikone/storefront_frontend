@@ -12,7 +12,7 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const product = await getProductBySlug(params.slug);
-  return { title: product ? `${product.name} — МобДетали` : "Товар не найден" };
+  return { title: product ? `${product.name} — ScreenHub` : "Товар не найден" };
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
@@ -56,12 +56,26 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
           {/* Информация о товаре */}
           <div>
-            {product.badge && (
-              <span className="inline-block bg-accent text-white text-xs font-semibold px-2.5 py-1 rounded-full mb-3">
-                {product.badge}
+            <div className="flex items-center gap-2 mb-3">
+              {product.badge && (
+                <span className="inline-block bg-accent text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                  {product.badge}
+                </span>
+              )}
+              <span
+                className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${
+                  product.inStock
+                    ? "bg-green-100 text-green-700"
+                    : "bg-amber-100 text-amber-700"
+                }`}
+              >
+                {product.inStock ? "В наличии" : "Под заказ"}
               </span>
-            )}
+            </div>
             <h1 className="text-2xl font-bold mb-1">{product.name}</h1>
+            {product.article && (
+              <p className="text-xs text-muted mb-1">Артикул: {product.article}</p>
+            )}
             <p className="text-muted mb-5">Совместимость: {product.compatibility}</p>
 
             <ProductActions product={product} />

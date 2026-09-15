@@ -30,6 +30,11 @@ export default function ProductCard({ product }: { product: Product }) {
               {product.badge}
             </span>
           )}
+          {!product.inStock && (
+            <span className="absolute top-2 right-2 bg-white/90 text-ink text-[11px] font-semibold px-2 py-0.5 rounded-full border border-border">
+              Под заказ
+            </span>
+          )}
         </div>
 
         <p className="text-xs text-muted mb-1">{product.compatibility}</p>

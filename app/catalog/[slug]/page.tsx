@@ -19,7 +19,7 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const category = await getCategoryBySlug(params.slug);
-  return { title: category ? `${category.name} — МобДетали` : "Раздел не найден" };
+  return { title: category ? `${category.name} — ScreenHub` : "Раздел не найден" };
 }
 
 export default async function CategoryPage({

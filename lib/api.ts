@@ -46,8 +46,12 @@ export interface Product {
   price: number;
   oldPrice?: number | null;
   badge?: string | null;
+  // Внутренний код товара — есть не у всех товаров (nullable).
+  article?: string | null;
   description: string;
   specs: ProductSpec[];
+  // "В наличии" (true) / "под заказ" (false) — выставляется вручную в админке.
+  inStock: boolean;
   // Структурированная совместимость для фильтра — есть не у всех товаров
   // (универсальные товары ни к одной модели не привязаны).
   compatibilityModels?: { compatibilityModel: CompatibilityModelRef & { brand: string } }[];

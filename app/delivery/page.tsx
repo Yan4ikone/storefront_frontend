@@ -3,7 +3,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Оплата и доставка — МобДетали",
+  title: "Оплата и доставка — ScreenHub",
 };
 
 export default function DeliveryPage() {

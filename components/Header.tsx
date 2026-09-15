@@ -31,8 +31,8 @@ export default function Header({ categories }: { categories: Category[] }) {
           </div>
           <div className="flex items-center gap-2">
             <Phone size={14} />
-            <a href="tel:+70000000000" className="hover:text-ink">
-              +7 (000) 000-00-00
+            <a href="tel:+79014922269" className="hover:text-ink">
+              +7 (901) 492-22-69
             </a>
           </div>
         </div>
@@ -42,7 +42,7 @@ export default function Header({ categories }: { categories: Category[] }) {
       <div className="max-w-container mx-auto px-4 py-4 flex items-center gap-4 md:gap-8">
         <Link href="/" className="shrink-0 flex items-baseline gap-1">
           <span className="text-2xl font-extrabold tracking-tight text-brand">
-            МобДетали
+            ScreenHub
           </span>
           <span className="hidden sm:inline text-xs text-muted">.ru</span>
         </Link>

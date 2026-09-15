@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="bg-brand-dark text-white/70">
       <div className="max-w-container mx-auto px-4 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
         <div>
-          <p className="text-white font-extrabold text-xl mb-3">МобДетали</p>
+          <p className="text-white font-extrabold text-xl mb-3">ScreenHub</p>
           <p className="max-w-[220px]">
             Запчасти, инструменты и аксессуары для смартфонов и ноутбуков.
           </p>
@@ -71,16 +71,17 @@ export default function Footer() {
         <div>
           <p className="text-white font-semibold mb-3">Контакты</p>
           <ul className="space-y-2">
-            <li>+7 (000) 000-00-00</li>
-            <li>info@mobdetali.example</li>
-            <li>Ежедневно: 09:00–19:00</li>
+            <li>+7 (901) 492-22-69</li>
+            <li>info@screenhub.example</li>
+            <li>Ежедневно: 09:00–18:00</li>
+            <li>г. Кореновск, ул. Ленина, 124</li>
           </ul>
         </div>
       </div>
 
       <div className="border-t border-white/10">
         <div className="max-w-container mx-auto px-4 py-4 text-xs flex flex-col sm:flex-row gap-2 sm:justify-between">
-          <p>© {new Date().getFullYear()} МобДетали. Все права защищены.</p>
+          <p>© {new Date().getFullYear()} ScreenHub. Все права защищены.</p>
           <div className="flex gap-4">
             <Link href="/privacy" className="hover:text-white">
               Политика конфиденциальности

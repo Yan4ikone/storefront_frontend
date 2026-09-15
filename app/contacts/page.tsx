@@ -3,7 +3,7 @@ import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Контакты — МобДетали",
+  title: "Контакты — ScreenHub",
 };
 
 export default function ContactsPage() {
@@ -20,8 +20,8 @@ export default function ContactsPage() {
               <Phone size={20} className="text-brand shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-sm mb-1">Телефон</p>
-                <a href="tel:+70000000000" className="text-ink hover:text-brand">
-                  +7 (000) 000-00-00
+                <a href="tel:+79014922269" className="text-ink hover:text-brand">
+                  +7 (901) 492-22-69
                 </a>
               </div>
             </div>
@@ -30,8 +30,8 @@ export default function ContactsPage() {
               <Mail size={20} className="text-brand shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-sm mb-1">Email</p>
-                <a href="mailto:info@mobdetali.example" className="text-ink hover:text-brand">
-                  info@mobdetali.example
+                <a href="mailto:info@screenhub.example" className="text-ink hover:text-brand">
+                  info@screenhub.example
                 </a>
               </div>
             </div>
@@ -40,7 +40,7 @@ export default function ContactsPage() {
               <Clock size={20} className="text-brand shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-sm mb-1">Часы работы</p>
-                <p className="text-ink">Ежедневно: 09:00–19:00</p>
+                <p className="text-ink">Ежедневно: 09:00–18:00</p>
               </div>
             </div>
 
@@ -48,7 +48,7 @@ export default function ContactsPage() {
               <MapPin size={20} className="text-brand shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-sm mb-1">Пункт самовывоза</p>
-                <p className="text-ink">Адрес уточняется</p>
+                <p className="text-ink">г. Кореновск, ул. Ленина, 124</p>
               </div>
             </div>
           </div>

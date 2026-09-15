@@ -3,7 +3,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Политика конфиденциальности — МобДетали",
+  title: "Политика конфиденциальности — ScreenHub",
 };
 
 export default function PrivacyPage() {
@@ -24,9 +24,9 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-semibold">1. Общие положения</h2>
             <p className="text-ink leading-relaxed">
               Настоящая политика описывает, какие персональные данные собирает
-              интернет-магазин МобДетали ({"["}указать организационно-правовую форму
+              интернет-магазин ScreenHub ({"["}указать организационно-правовую форму
               и название владельца сайта — ИП/ООО{"]"}, далее — «Магазин») на сайте
-              mobdetali.example, как их использует и как их защищает, в соответствии
+              screenhub.example, как их использует и как их защищает, в соответствии
               с Федеральным законом от 27.07.2006 №152-ФЗ «О персональных данных».
             </p>
             <p className="text-ink leading-relaxed">

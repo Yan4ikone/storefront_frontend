@@ -22,8 +22,10 @@ export default function NewProductPage() {
         price: values.price,
         oldPrice: values.oldPrice ?? undefined,
         badge: values.badge || undefined,
+        article: values.article || undefined,
         description: values.description,
         specs: values.specs,
+        inStock: values.inStock,
         compatibilityModelSlugs: values.compatibilityModelSlugs,
       });
       router.push("/admin/products");

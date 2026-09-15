@@ -3,7 +3,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Файлы cookie — МобДетали",
+  title: "Файлы cookie — ScreenHub",
 };
 
 export default function CookiesPage() {
@@ -17,7 +17,7 @@ export default function CookiesPage() {
 
           <section className="space-y-3">
             <p className="text-ink leading-relaxed">
-              Сейчас сайт МобДетали не использует рекламные или отслеживающие
+              Сейчас сайт ScreenHub не использует рекламные или отслеживающие
               файлы cookie. Вместо cookie сайт хранит несколько технических значений
               прямо в вашем браузере (это называется локальным хранилищем —
               localStorage/sessionStorage) — они нужны для работы сайта и никуда с

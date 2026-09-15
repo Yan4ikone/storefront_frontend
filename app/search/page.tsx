@@ -17,7 +17,7 @@ interface SearchPageParams {
 
 export function generateMetadata({ searchParams }: { searchParams: SearchPageParams }): Metadata {
   const q = searchParams.q?.trim();
-  return { title: q ? `«${q}» — поиск — МобДетали` : "Поиск — МобДетали" };
+  return { title: q ? `«${q}» — поиск — ScreenHub` : "Поиск — ScreenHub" };
 }
 
 export default async function SearchPage({ searchParams }: { searchParams: SearchPageParams }) {

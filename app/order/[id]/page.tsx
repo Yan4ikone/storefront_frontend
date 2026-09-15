@@ -15,7 +15,7 @@ const DELIVERY_LABEL: Record<string, string> = {
 };
 
 export const metadata: Metadata = {
-  title: "Заказ оформлен — МобДетали",
+  title: "Заказ оформлен — ScreenHub",
 };
 
 export default async function OrderPage({ params }: { params: { id: string } }) {

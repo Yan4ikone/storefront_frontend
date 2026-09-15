@@ -22,8 +22,10 @@ export interface ProductFormValues {
   price: number;
   oldPrice: number | null;
   badge: string;
+  article: string;
   description: string;
   specs: ProductSpecValue[];
+  inStock: boolean;
   // Модели устройств для фильтра "Совместимость" на витрине — независимо от
   // текстового поля compatibility выше (оно только для отображения на карточке).
   compatibilityModelSlugs: string[];
@@ -55,8 +57,10 @@ export default function ProductForm({
     initial?.oldPrice != null ? String(initial.oldPrice) : ""
   );
   const [badge, setBadge] = useState(initial?.badge ?? "");
+  const [article, setArticle] = useState(initial?.article ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
   const [specs, setSpecs] = useState<ProductSpecValue[]>(initial?.specs ?? []);
+  const [inStock, setInStock] = useState(initial?.inStock ?? true);
   const [compatibilityModelSlugs, setCompatibilityModelSlugs] = useState<string[]>(
     initial?.compatibilityModelSlugs ?? []
   );
@@ -107,8 +111,10 @@ export default function ProductForm({
       price: Number(price),
       oldPrice: oldPrice.trim() ? Number(oldPrice) : null,
       badge: badge.trim(),
+      article: article.trim(),
       description: description.trim(),
       specs: specs.filter((s) => s.label.trim() && s.value.trim()),
+      inStock,
       compatibilityModelSlugs,
     });
   };
@@ -243,6 +249,34 @@ export default function ProductForm({
             placeholder="Например: Хит"
             className="w-full rounded-card border border-border px-3.5 py-2.5 text-sm outline-none focus:border-brand"
           />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 items-end">
+        <div>
+          <label className="block text-sm font-medium mb-1.5">Артикул</label>
+          <input
+            type="text"
+            value={article}
+            onChange={(e) => setArticle(e.target.value)}
+            placeholder="Например: BAT-001"
+            className="w-full rounded-card border border-border px-3.5 py-2.5 text-sm outline-none focus:border-brand"
+          />
+          <p className="text-xs text-muted mt-1">Необязательно, но должен быть уникальным.</p>
+        </div>
+        <div className="pb-2.5">
+          <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+            <input
+              type="checkbox"
+              className="accent-brand"
+              checked={inStock}
+              onChange={(e) => setInStock(e.target.checked)}
+            />
+            В наличии
+          </label>
+          <p className="text-xs text-muted mt-1">
+            Снято — на витрине покажется бейдж «Под заказ».
+          </p>
         </div>
       </div>
 

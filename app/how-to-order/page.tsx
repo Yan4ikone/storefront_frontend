@@ -3,7 +3,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Как оформить заказ — МобДетали",
+  title: "Как оформить заказ — ScreenHub",
 };
 
 const STEPS = [

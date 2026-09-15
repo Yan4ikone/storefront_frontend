@@ -39,8 +39,10 @@ export default function EditProductPage() {
         price: values.price,
         oldPrice: values.oldPrice ?? undefined,
         badge: values.badge || undefined,
+        article: values.article || undefined,
         description: values.description,
         specs: values.specs,
+        inStock: values.inStock,
         compatibilityModelSlugs: values.compatibilityModelSlugs,
       });
       router.push("/admin/products");
@@ -67,8 +69,10 @@ export default function EditProductPage() {
           price: product.price,
           oldPrice: product.oldPrice ?? null,
           badge: product.badge ?? "",
+          article: product.article ?? "",
           description: product.description,
           specs: product.specs,
+          inStock: product.inStock,
           compatibilityModelSlugs:
             product.compatibilityModels?.map((c) => c.compatibilityModel.slug) ?? [],
         }}

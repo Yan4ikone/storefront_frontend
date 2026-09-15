@@ -5,7 +5,7 @@ import { getCategories } from "@/lib/api";
 import { getCategoryIcon } from "@/lib/icon-map";
 
 export const metadata: Metadata = {
-  title: "Каталог — МобДетали",
+  title: "Каталог — ScreenHub",
 };
 
 export default async function CatalogPage() {

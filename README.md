@@ -40,8 +40,8 @@ npm run dev
 Все цвета вынесены в CSS-переменные в `app/globals.css` (`--brand`, `--accent`, `--ink`,
 `--muted`, `--surface`, `--border-color`) — компоненты используют только имена, не
 конкретные hex-коды. Чтобы поменять палитру под реальный бренд, достаточно
-отредактировать значения в этом одном файле. Название «МобДетали» — временное
-(в `components/Header.tsx`, `components/Footer.tsx`, `app/layout.tsx`).
+отредактировать значения в этом одном файле. Название бренда — ScreenHub
+(используется в `components/Header.tsx`, `components/Footer.tsx`, `app/layout.tsx`).
 
 ## Дальше по плану
 

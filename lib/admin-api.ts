@@ -217,8 +217,10 @@ export interface AdminProduct {
   price: number;
   oldPrice: number | null;
   badge: string | null;
+  article: string | null;
   description: string;
   specs: AdminProductSpec[];
+  inStock: boolean;
   createdAt: string;
   updatedAt: string;
   // Есть только в ответе списка (GET /admin/catalog/products), т.к. сервис
@@ -238,8 +240,10 @@ export interface CreateProductInput {
   price: number;
   oldPrice?: number;
   badge?: string;
+  article?: string;
   description: string;
   specs: AdminProductSpec[];
+  inStock?: boolean;
   compatibilityModelSlugs?: string[];
 }
 
@@ -250,8 +254,10 @@ export interface UpdateProductInput {
   price?: number;
   oldPrice?: number;
   badge?: string;
+  article?: string;
   description?: string;
   specs?: AdminProductSpec[];
+  inStock?: boolean;
   compatibilityModelSlugs?: string[];
 }
 

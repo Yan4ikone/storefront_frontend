@@ -3,7 +3,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "О магазине — МобДетали",
+  title: "О магазине — ScreenHub",
 };
 
 export default function AboutPage() {
@@ -17,7 +17,7 @@ export default function AboutPage() {
 
           <section className="space-y-3">
             <p className="text-ink leading-relaxed">
-              МобДетали — интернет-магазин запчастей, инструментов и аксессуаров для
+              ScreenHub — интернет-магазин запчастей, инструментов и аксессуаров для
               смартфонов и ноутбуков. Мы специализируемся на деталях для
               самостоятельного ремонта и обслуживания мобильной техники: от
               аккумуляторов и дисплеев до микросхем и разъёмов.

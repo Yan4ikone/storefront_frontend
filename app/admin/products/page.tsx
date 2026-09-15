@@ -59,8 +59,10 @@ export default function AdminProductsPage() {
             <thead className="bg-surface text-left text-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">Название</th>
+                <th className="px-4 py-3 font-medium">Артикул</th>
                 <th className="px-4 py-3 font-medium">Раздел</th>
                 <th className="px-4 py-3 font-medium">Цена</th>
+                <th className="px-4 py-3 font-medium">Наличие</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -68,11 +70,19 @@ export default function AdminProductsPage() {
               {products.map((product) => (
                 <tr key={product.slug} className="border-t border-border">
                   <td className="px-4 py-3 font-medium">{product.name}</td>
+                  <td className="px-4 py-3 text-muted">{product.article ?? "—"}</td>
                   <td className="px-4 py-3 text-muted">
                     {product.category?.name ?? product.categorySlug}
                   </td>
                   <td className="px-4 py-3 text-muted">
                     {product.price.toLocaleString("ru-RU")} ₽
+                  </td>
+                  <td className="px-4 py-3">
+                    {product.inStock ? (
+                      <span className="text-green-700">В наличии</span>
+                    ) : (
+                      <span className="text-amber-600">Под заказ</span>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-3">

@@ -100,7 +100,7 @@ function AdminShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen flex bg-surface">
       <aside className="w-56 shrink-0 bg-brand-dark text-white flex flex-col">
         <div className="px-5 py-5 text-lg font-extrabold border-b border-white/10">
-          МобДетали · Админка
+          ScreenHub · Админка
         </div>
         <nav className="flex-1 py-4 space-y-1">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
