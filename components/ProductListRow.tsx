@@ -1,7 +1,9 @@
 "use client";
 
-// Вид "Список" — строка с картинкой-заглушкой и основными атрибутами, крупнее
-// и подробнее, чем строка таблицы, но компактнее, чем плитка (см. ProductCard).
+// Вид "Список" — строка с картинкой-заглушкой и основными атрибутами. Картинка
+// здесь намеренно маленькая (миниатюра) — в отличие от плитки (ProductCard), где
+// изображение крупное; сам список остаётся компактнее таблицы по содержанию,
+// но с превью товара.
 
 import Link from "next/link";
 import { ImageOff, ShoppingCart, Check } from "lucide-react";
@@ -27,11 +29,11 @@ export default function ProductListRow({ product }: { product: Product }) {
     <div className="flex gap-4 rounded-card border border-border bg-white p-4 hover:border-brand/40 transition-colors">
       <Link
         href={`/product/${product.slug}`}
-        className="relative shrink-0 w-24 h-24 sm:w-28 sm:h-28 rounded-lg bg-surface flex items-center justify-center text-muted/50"
+        className="relative shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-surface flex items-center justify-center text-muted/50"
       >
-        <ImageOff size={24} strokeWidth={1.5} />
+        <ImageOff size={16} strokeWidth={1.5} />
         {product.badge && (
-          <span className="absolute top-1.5 left-1.5 bg-accent text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+          <span className="absolute -top-1.5 -left-1.5 bg-accent text-white text-[9px] font-semibold px-1 py-0.5 rounded-full leading-none">
             {product.badge}
           </span>
         )}
