@@ -26,6 +26,7 @@ export default function NewProductPage() {
         description: values.description,
         specs: values.specs,
         inStock: values.inStock,
+        expectedDelivery: values.expectedDelivery || undefined,
         compatibilityModelSlugs: values.compatibilityModelSlugs,
       });
       router.push("/admin/products");

@@ -59,6 +59,9 @@ export interface Product {
   specs: ProductSpec[];
   // "В наличии" (true) / "под заказ" (false) — выставляется вручную в админке.
   inStock: boolean;
+  // Ожидаемый срок/дата поступления — свободный текст, задаётся вручную в
+  // админке, актуален прежде всего для товаров "под заказ".
+  expectedDelivery?: string | null;
   // Структурированная совместимость для фильтра — есть не у всех товаров
   // (универсальные товары ни к одной модели не привязаны).
   compatibilityModels?: { compatibilityModel: CompatibilityModelRef & { brand: string } }[];
@@ -69,6 +72,10 @@ export interface ProductDetail extends Product {
 }
 
 export type ProductSort = "new" | "price_asc" | "price_desc";
+
+// Вид отображения списка товаров в разделе каталога/поиске — по умолчанию
+// "table" (см. переключатель ProductViewToggle).
+export type ProductViewMode = "table" | "list" | "tile";
 
 export interface ProductFilters {
   category?: string;

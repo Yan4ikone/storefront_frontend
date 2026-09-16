@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import ProductCard from "@/components/ProductCard";
+import ProductResults from "@/components/ProductResults";
+import ProductViewToggle from "@/components/ProductViewToggle";
 import CatalogFilters from "@/components/CatalogFilters";
 import SortSelect from "@/components/SortSelect";
 import CategorySelect from "@/components/CategorySelect";
-import { getCategories, getCompatibilityModels, getProducts, type ProductSort } from "@/lib/api";
+import {
+  getCategories,
+  getCompatibilityModels,
+  getProducts,
+  type ProductSort,
+  type ProductViewMode,
+} from "@/lib/api";
 
 interface SearchPageParams {
   q?: string;
@@ -13,7 +20,10 @@ interface SearchPageParams {
   minPrice?: string;
   maxPrice?: string;
   sort?: string;
+  view?: string;
 }
+
+const VALID_VIEWS: ProductViewMode[] = ["table", "list", "tile"];
 
 export function generateMetadata({ searchParams }: { searchParams: SearchPageParams }): Metadata {
   const q = searchParams.q?.trim();
@@ -27,6 +37,9 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
   const minPrice = searchParams.minPrice ? Number(searchParams.minPrice) : undefined;
   const maxPrice = searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined;
   const sort = (searchParams.sort as ProductSort | undefined) ?? undefined;
+  const view: ProductViewMode = VALID_VIEWS.includes(searchParams.view as ProductViewMode)
+    ? (searchParams.view as ProductViewMode)
+    : "table";
 
   const [items, compatibilityGroups, categories] = q
     ? await Promise.all([
@@ -66,11 +79,14 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
             </aside>
 
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
                 <p className="text-sm text-muted">
                   {items.length === 0 ? "Ничего не найдено" : `Найдено: ${items.length}`}
                 </p>
-                <SortSelect sort={sort} />
+                <div className="flex items-center gap-3 flex-wrap">
+                  <ProductViewToggle view={view} />
+                  <SortSelect sort={sort} />
+                </div>
               </div>
 
               {items.length === 0 ? (
@@ -78,11 +94,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
                   Попробуйте изменить запрос или сбросить фильтры по цене и совместимости.
                 </p>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {items.map((product) => (
-                    <ProductCard key={product.slug} product={product} />
-                  ))}
-                </div>
+                <ProductResults items={items} view={view} />
               )}
             </div>
           </div>

@@ -71,6 +71,11 @@ export default async function ProductPage({ params }: { params: { slug: string }
               >
                 {product.inStock ? "В наличии" : "Под заказ"}
               </span>
+              {!product.inStock && product.expectedDelivery && (
+                <span className="text-sm text-muted">
+                  Ожидается: {product.expectedDelivery}
+                </span>
+              )}
             </div>
             <h1 className="text-2xl font-bold mb-1">{product.name}</h1>
             {product.article && (

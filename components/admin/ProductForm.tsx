@@ -2,12 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { Plus, Trash2 } from "lucide-react";
-import {
-  getCategories,
-  getCompatibilityModels,
-  type AdminCategory,
-  type CompatibilityGroup,
-} from "@/lib/admin-api";
+import { getCategories, type AdminCategory } from "@/lib/admin-api";
 
 export interface ProductSpecValue {
   label: string;
@@ -26,8 +21,14 @@ export interface ProductFormValues {
   description: string;
   specs: ProductSpecValue[];
   inStock: boolean;
-  // Модели устройств для фильтра "Совместимость" на витрине — независимо от
-  // текстового поля compatibility выше (оно только для отображения на карточке).
+  // Ожидаемый срок/дата поступления — свободный текст, актуален прежде всего
+  // для товаров "под заказ" (inStock=false), но жёстко с ним не связан.
+  expectedDelivery: string;
+  // Модели устройств для фильтра "Совместимость" на витрине — в этой форме не
+  // редактируются (поле убрано из админки по решению — совместимость теперь
+  // прописывается прямо в наименовании/тексте товара), но значение сохраняется
+  // как было при редактировании существующего товара, чтобы не терять уже
+  // выставленные ранее связи "молча" при простом сохранении других полей.
   compatibilityModelSlugs: string[];
 }
 
@@ -47,7 +48,6 @@ export default function ProductForm({
   onSubmit,
 }: ProductFormProps) {
   const [categories, setCategories] = useState<AdminCategory[]>([]);
-  const [compatibilityGroups, setCompatibilityGroups] = useState<CompatibilityGroup[]>([]);
   const [slug, setSlug] = useState(initial?.slug ?? "");
   const [name, setName] = useState(initial?.name ?? "");
   const [categorySlug, setCategorySlug] = useState(initial?.categorySlug ?? "");
@@ -61,9 +61,10 @@ export default function ProductForm({
   const [description, setDescription] = useState(initial?.description ?? "");
   const [specs, setSpecs] = useState<ProductSpecValue[]>(initial?.specs ?? []);
   const [inStock, setInStock] = useState(initial?.inStock ?? true);
-  const [compatibilityModelSlugs, setCompatibilityModelSlugs] = useState<string[]>(
-    initial?.compatibilityModelSlugs ?? []
-  );
+  const [expectedDelivery, setExpectedDelivery] = useState(initial?.expectedDelivery ?? "");
+  // Не редактируется в этой форме (см. комментарий в ProductFormValues выше) —
+  // просто сохраняем как было, чтобы отправить обратно без изменений.
+  const compatibilityModelSlugs = initial?.compatibilityModelSlugs ?? [];
 
   useEffect(() => {
     getCategories()
@@ -75,19 +76,7 @@ export default function ProductForm({
         // Список для выпадающего меню — если не загрузился, просто останется
         // пустым, а ошибку сохранения покажет сама форма при попытке отправки.
       });
-    getCompatibilityModels()
-      .then(setCompatibilityGroups)
-      .catch(() => {
-        // Список моделей для чекбоксов — если не загрузился, форма всё равно
-        // сохранит товар, просто без привязки к моделям устройств.
-      });
   }, []);
-
-  const toggleCompatibilityModel = (modelSlug: string, checked: boolean) => {
-    setCompatibilityModelSlugs((prev) =>
-      checked ? [...prev, modelSlug] : prev.filter((s) => s !== modelSlug)
-    );
-  };
 
   const updateSpec = (index: number, patch: Partial<ProductSpecValue>) => {
     setSpecs((prev) => prev.map((spec, i) => (i === index ? { ...spec, ...patch } : spec)));
@@ -115,6 +104,7 @@ export default function ProductForm({
       description: description.trim(),
       specs: specs.filter((s) => s.label.trim() && s.value.trim()),
       inStock,
+      expectedDelivery: expectedDelivery.trim(),
       compatibilityModelSlugs,
     });
   };
@@ -182,41 +172,6 @@ export default function ProductForm({
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1.5">
-          Модели устройств (для фильтра "Совместимость" на витрине)
-        </label>
-        {compatibilityGroups.length === 0 ? (
-          <p className="text-xs text-muted">
-            Список моделей не загрузился или пока пуст — товар можно сохранить и без него.
-          </p>
-        ) : (
-          <div className="rounded-card border border-border p-3 space-y-3 max-h-56 overflow-y-auto">
-            {compatibilityGroups.map((group) => (
-              <div key={group.brand}>
-                <p className="text-xs font-semibold text-muted mb-1.5">{group.brand}</p>
-                <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-                  {group.models.map((m) => (
-                    <label key={m.slug} className="flex items-center gap-1.5 text-sm cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="accent-brand"
-                        checked={compatibilityModelSlugs.includes(m.slug)}
-                        onChange={(e) => toggleCompatibilityModel(m.slug, e.target.checked)}
-                      />
-                      <span>{m.model}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-        <p className="text-xs text-muted mt-1">
-          Не отмечена ни одна модель — товар считается универсальным и не попадёт в фильтр по модели устройства.
-        </p>
-      </div>
-
       <div className="grid grid-cols-3 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1.5">Цена, ₽</label>
@@ -278,6 +233,20 @@ export default function ProductForm({
             Снято — на витрине покажется бейдж «Под заказ».
           </p>
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1.5">Ожидается доставка</label>
+        <input
+          type="text"
+          value={expectedDelivery}
+          onChange={(e) => setExpectedDelivery(e.target.value)}
+          placeholder="Например: 20.09 или 5-7 дней"
+          className="w-full rounded-card border border-border px-3.5 py-2.5 text-sm outline-none focus:border-brand"
+        />
+        <p className="text-xs text-muted mt-1">
+          Необязательно. Показывается на витрине рядом с пометкой «Под заказ».
+        </p>
       </div>
 
       <div>

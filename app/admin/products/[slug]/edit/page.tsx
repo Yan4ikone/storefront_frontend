@@ -43,6 +43,7 @@ export default function EditProductPage() {
         description: values.description,
         specs: values.specs,
         inStock: values.inStock,
+        expectedDelivery: values.expectedDelivery || undefined,
         compatibilityModelSlugs: values.compatibilityModelSlugs,
       });
       router.push("/admin/products");
@@ -73,6 +74,7 @@ export default function EditProductPage() {
           description: product.description,
           specs: product.specs,
           inStock: product.inStock,
+          expectedDelivery: product.expectedDelivery ?? "",
           compatibilityModelSlugs:
             product.compatibilityModels?.map((c) => c.compatibilityModel.slug) ?? [],
         }}

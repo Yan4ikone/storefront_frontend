@@ -81,7 +81,9 @@ export default function AdminProductsPage() {
                     {product.inStock ? (
                       <span className="text-green-700">В наличии</span>
                     ) : (
-                      <span className="text-amber-600">Под заказ</span>
+                      <span className="text-amber-600">
+                        Под заказ{product.expectedDelivery ? ` · ${product.expectedDelivery}` : ""}
+                      </span>
                     )}
                   </td>
                   <td className="px-4 py-3">

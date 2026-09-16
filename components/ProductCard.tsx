@@ -38,9 +38,18 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
 
         <p className="text-xs text-muted mb-1">{product.compatibility}</p>
-        <p className="font-medium text-sm leading-snug mb-3 line-clamp-2 text-ink">
+        <p
+          className={`font-medium text-sm leading-snug line-clamp-2 text-ink ${
+            !product.inStock && product.expectedDelivery ? "mb-1" : "mb-3"
+          }`}
+        >
           {product.name}
         </p>
+        {!product.inStock && product.expectedDelivery && (
+          <p className="text-[11px] text-amber-700 mb-2">
+            Ожидается: {product.expectedDelivery}
+          </p>
+        )}
       </Link>
 
       <div className="mt-auto flex items-center justify-between gap-2">

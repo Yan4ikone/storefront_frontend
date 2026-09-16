@@ -1,17 +1,27 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import ProductCard from "@/components/ProductCard";
+import ProductResults from "@/components/ProductResults";
+import ProductViewToggle from "@/components/ProductViewToggle";
 import CatalogFilters from "@/components/CatalogFilters";
 import SortSelect from "@/components/SortSelect";
-import { getCategoryBySlug, getCompatibilityModels, getProducts, type ProductSort } from "@/lib/api";
+import {
+  getCategoryBySlug,
+  getCompatibilityModels,
+  getProducts,
+  type ProductSort,
+  type ProductViewMode,
+} from "@/lib/api";
 
 interface CategorySearchParams {
   compatibility?: string;
   minPrice?: string;
   maxPrice?: string;
   sort?: string;
+  view?: string;
 }
+
+const VALID_VIEWS: ProductViewMode[] = ["table", "list", "tile"];
 
 export async function generateMetadata({
   params,
@@ -36,6 +46,11 @@ export default async function CategoryPage({
   const minPrice = searchParams.minPrice ? Number(searchParams.minPrice) : undefined;
   const maxPrice = searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined;
   const sort = (searchParams.sort as ProductSort | undefined) ?? undefined;
+  // "Таблица" — вид по умолчанию (см. ProductViewToggle); незнакомое/пустое
+  // значение параметра тоже к ней сводится.
+  const view: ProductViewMode = VALID_VIEWS.includes(searchParams.view as ProductViewMode)
+    ? (searchParams.view as ProductViewMode)
+    : "table";
 
   const [items, compatibilityGroups] = await Promise.all([
     getProducts({ category: category.slug, compatibility, minPrice, maxPrice, sort }),
@@ -66,7 +81,8 @@ export default async function CategoryPage({
           </aside>
 
           <div>
-            <div className="flex items-center justify-end mb-4">
+            <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+              <ProductViewToggle view={view} />
               <SortSelect sort={sort} />
             </div>
 
@@ -77,11 +93,7 @@ export default async function CategoryPage({
                   : "В этом разделе пока нет товаров."}
               </p>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {items.map((product) => (
-                  <ProductCard key={product.slug} product={product} />
-                ))}
-              </div>
+              <ProductResults items={items} view={view} />
             )}
           </div>
         </div>

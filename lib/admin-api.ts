@@ -221,6 +221,7 @@ export interface AdminProduct {
   description: string;
   specs: AdminProductSpec[];
   inStock: boolean;
+  expectedDelivery: string | null;
   createdAt: string;
   updatedAt: string;
   // Есть только в ответе списка (GET /admin/catalog/products), т.к. сервис
@@ -244,6 +245,7 @@ export interface CreateProductInput {
   description: string;
   specs: AdminProductSpec[];
   inStock?: boolean;
+  expectedDelivery?: string;
   compatibilityModelSlugs?: string[];
 }
 
@@ -258,6 +260,7 @@ export interface UpdateProductInput {
   description?: string;
   specs?: AdminProductSpec[];
   inStock?: boolean;
+  expectedDelivery?: string;
   compatibilityModelSlugs?: string[];
 }
 
