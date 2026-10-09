@@ -4,6 +4,8 @@
 // в localStorage (обычный "запомнить меня" для покупателя) и подходит любому
 // вошедшему пользователю.
 
+import type { Order, OrderStatus } from "./api";
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001/api/v1";
 
@@ -15,6 +17,9 @@ export interface AuthUser {
   phone: string | null;
   name: string | null;
   role: UserRole;
+  // Пока только отображение в профиле + кнопка "Пополнить"-заглушка — см.
+  // комментарий у User.balance на бэкенде. Меняет значение только админ.
+  balance: number;
   createdAt: string;
 }
 
@@ -103,30 +108,75 @@ export function updateMe(token: string, payload: UpdateMePayload): Promise<AuthU
   });
 }
 
-export interface MyOrderItem {
-  id: string;
-  productSlug: string | null;
-  name: string;
-  price: number;
-  qty: number;
+export function changePassword(
+  token: string,
+  payload: { currentPassword: string; newPassword: string }
+): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>("/users/me/password", {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  });
 }
 
-export interface MyOrder {
-  id: string;
-  status: string;
-  customerName: string;
-  phone: string;
-  email: string | null;
-  deliveryMethod: "pickup" | "courier";
-  address: string | null;
-  comment: string | null;
-  itemsTotal: number;
-  items: MyOrderItem[];
-  createdAt: string;
-}
+// Переиспользуем типы заказа с витрины (Order/OrderStatus из lib/api.ts) —
+// личный кабинет получает те же самые поля (номер, статус, состав и т.д.),
+// просто через свой защищённый эндпоинт /users/me/orders.
+export type MyOrderItem = Order["items"][number];
+export type MyOrder = Order;
+export type { OrderStatus };
 
 export function getMyOrders(token: string): Promise<MyOrder[]> {
   return request<MyOrder[]>("/users/me/orders", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+// "Новый" заказ удаляется сразу, более поздний — ставится в очередь на
+// подтверждение отмены менеджером (см. backend OrdersService.cancelByCustomer).
+export function cancelMyOrder(
+  token: string,
+  orderId: string
+): Promise<{ ok: boolean; deleted: boolean; alreadyRequested?: boolean }> {
+  return request(`/orders/${encodeURIComponent(orderId)}/cancel`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+// --- Избранное ---
+
+export interface FavoriteItem {
+  productSlug: string;
+  createdAt: string;
+  product: {
+    slug: string;
+    name: string;
+    price: number;
+    oldPrice: number | null;
+    compatibility: string;
+    inStock: boolean;
+    images: string[];
+    category: { slug: string; name: string };
+  };
+}
+
+export function getFavorites(token: string): Promise<FavoriteItem[]> {
+  return request<FavoriteItem[]>("/users/me/favorites", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function addFavorite(token: string, slug: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/users/me/favorites/${encodeURIComponent(slug)}`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export function removeFavorite(token: string, slug: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/users/me/favorites/${encodeURIComponent(slug)}`, {
+    method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   });
 }

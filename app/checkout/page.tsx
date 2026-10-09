@@ -25,13 +25,21 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // В корзине одновременно есть товары "в наличии" и "под заказ" — покупатель
+  // сам решает, оформить всё одним заказом или раздельно (два заказа со
+  // счётом-привязкой groupId, см. OrdersService.create на бэкенде).
+  const hasAvailable = items.some((item) => item.inStock);
+  const hasBackorder = items.some((item) => !item.inStock);
+  const canSplit = hasAvailable && hasBackorder;
+  const [splitByAvailability, setSplitByAvailability] = useState(false);
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
     setSubmitting(true);
 
     try {
-      const order = await createOrder({
+      const orders = await createOrder({
         customerName,
         phone,
         email: email.trim() ? email.trim() : undefined,
@@ -39,9 +47,14 @@ export default function CheckoutPage() {
         address: deliveryMethod === "courier" ? address : undefined,
         comment: comment.trim() ? comment.trim() : undefined,
         items: items.map((item) => ({ productSlug: item.slug, qty: item.qty })),
+        splitByAvailability: canSplit ? splitByAvailability : undefined,
       });
       clear();
-      router.push(`/order/${order.id}`);
+      if (orders.length > 1 && orders[0].groupId) {
+        router.push(`/order/group/${orders[0].groupId}`);
+      } else {
+        router.push(`/order/${orders[0].id}`);
+      }
     } catch (err) {
       setError(
         err instanceof OrderApiError
@@ -202,6 +215,28 @@ export default function CheckoutPage() {
               />
             </div>
 
+            {canSplit && (
+              <div className="rounded-lg border border-border bg-surface px-3.5 py-3">
+                <label className="flex items-start gap-2.5 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={splitByAvailability}
+                    onChange={(e) => setSplitByAvailability(e.target.checked)}
+                    className="accent-brand mt-0.5"
+                  />
+                  <span>
+                    <span className="font-medium block">
+                      Оформить раздельно — товары "в наличии" и "под заказ" отдельными заказами
+                    </span>
+                    <span className="text-xs text-muted">
+                      Удобно, если не хотите ждать товар под заказ, чтобы получить то, что есть на складе.
+                      По умолчанию — один общий заказ.
+                    </span>
+                  </span>
+                </label>
+              </div>
+            )}
+
             <p className="text-xs text-muted">
               Оплата — при получении. Онлайн-оплата подключится отдельным этапом.
             </p>
@@ -231,6 +266,13 @@ export default function CheckoutPage() {
                     <p className="text-xs text-muted">
                       {item.qty} × {formatPrice(item.price)}
                     </p>
+                    <span
+                      className={`inline-block mt-1 text-[11px] font-medium px-1.5 py-0.5 rounded-full ${
+                        item.inStock ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"
+                      }`}
+                    >
+                      {item.inStock ? "В наличии" : "Под заказ"}
+                    </span>
                   </div>
                   <p className="font-semibold whitespace-nowrap">
                     {formatPrice(item.price * item.qty)}

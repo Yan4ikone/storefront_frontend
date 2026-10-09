@@ -20,6 +20,16 @@ const API_BASE_URL =
     ? process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL
     : process.env.NEXT_PUBLIC_API_BASE_URL) ?? "http://localhost:3001/api/v1";
 
+// Фото товаров (Product.images) раздаются бэкендом отдельно от /api/v1 —
+// как обычная статика по пути /uploads/... (см. backend/src/main.ts). API_BASE_URL
+// заканчивается на "/api/v1" — отрезаем этот хвост, чтобы получить просто
+// адрес бэкенда, к которому и приклеивается относительный путь из images[].
+export function resolveImageUrl(path: string): string {
+  if (/^https?:\/\//.test(path)) return path;
+  const origin = API_BASE_URL.replace(/\/api\/v1\/?$/, "");
+  return `${origin}${path}`;
+}
+
 export interface Category {
   slug: string;
   name: string;
@@ -65,6 +75,9 @@ export interface Product {
   // Структурированная совместимость для фильтра — есть не у всех товаров
   // (универсальные товары ни к одной модели не привязаны).
   compatibilityModels?: { compatibilityModel: CompatibilityModelRef & { brand: string } }[];
+  // Пути вида "/uploads/products/xxx.webp" (см. resolveImageUrl) — первое
+  // фото считается обложкой карточки. Пустой массив — пока без фото.
+  images: string[];
 }
 
 export interface ProductDetail extends Product {
@@ -149,6 +162,38 @@ export async function getCompatibilityModels(categorySlug?: string): Promise<Com
 
 export type DeliveryMethod = "pickup" | "courier";
 
+// Линия прогресса заказа (см. storefront/components/OrderProgress.tsx) — то,
+// что видит покупатель как шаги с точками, и что переключает админ. "cancelled"
+// стоит отдельно, вне линии, см. Order.cancellationRequested для запроса на
+// отмену более позднего заказа.
+export const ORDER_STATUSES = [
+  "new",
+  "confirmed",
+  "assembled",
+  "shipped",
+  "delivered",
+  "cancelled",
+] as const;
+export type OrderStatus = (typeof ORDER_STATUSES)[number];
+
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  new: "Новый",
+  confirmed: "Подтверждён",
+  assembled: "Собран",
+  shipped: "В пути",
+  delivered: "Доставлен",
+  cancelled: "Отменён",
+};
+
+// Порядок для линии прогресса — без cancelled (он показывается отдельным бейджем).
+export const ORDER_PROGRESS_STATUSES: OrderStatus[] = [
+  "new",
+  "confirmed",
+  "assembled",
+  "shipped",
+  "delivered",
+];
+
 export interface OrderItemInput {
   productSlug: string;
   qty: number;
@@ -162,6 +207,9 @@ export interface CreateOrderPayload {
   address?: string;
   comment?: string;
   items: OrderItemInput[];
+  // См. комментарий у CreateOrderDto.splitByAvailability на бэкенде — true,
+  // если покупатель на чекауте выбрал "оформить раздельно".
+  splitByAvailability?: boolean;
 }
 
 export interface OrderItemResult {
@@ -170,11 +218,20 @@ export interface OrderItemResult {
   name: string;
   price: number;
   qty: number;
+  // Снимок наличия на момент заказа (товар мог после этого поменять статус).
+  inStock: boolean;
+  // Текущее фото товара (не снимок) — для миниатюры в истории заказов; null,
+  // если товар с тех пор удалён из каталога или у него ещё нет фото.
+  product?: { images: string[] } | null;
 }
 
 export interface Order {
   id: string;
-  status: string;
+  // Короткий номер для поиска заказа среди тысячи других — показывается
+  // покупателю и в админке вместо непрозрачного id.
+  number: number;
+  status: OrderStatus;
+  cancellationRequested: boolean;
   customerName: string;
   phone: string;
   email: string | null;
@@ -184,6 +241,9 @@ export interface Order {
   itemsTotal: number;
   items: OrderItemResult[];
   createdAt: string;
+  // Общий идентификатор у двух заказов, получившихся из одной корзины при
+  // раздельном оформлении "в наличии"/"под заказ" — у обычного заказа null.
+  groupId: string | null;
 }
 
 // В отличие от apiGet, ошибки здесь не гасятся — форма оформления заказа
@@ -197,7 +257,10 @@ export class OrderApiError extends Error {
   }
 }
 
-export async function createOrder(payload: CreateOrderPayload): Promise<Order> {
+// Возвращает массив: обычно один заказ, но если передан
+// splitByAvailability=true и в корзине реально есть и "в наличии", и "под
+// заказ" товары — два заказа с общим groupId (см. OrdersService.create на бэкенде).
+export async function createOrder(payload: CreateOrderPayload): Promise<Order[]> {
   // Если покупатель залогинен — заказ привяжется к его аккаунту (личный
   // кабинет, история покупок). Если нет — оформляется как гость, как и раньше.
   const { getCustomerToken } = await import("./auth-context");
@@ -233,4 +296,9 @@ export async function createOrder(payload: CreateOrderPayload): Promise<Order> {
 
 export async function getOrder(id: string): Promise<Order | null> {
   return apiGet<Order>(`/orders/${encodeURIComponent(id)}`);
+}
+
+// Страница подтверждения раздельного заказа (/order/group/[groupId]).
+export async function getOrderGroup(groupId: string): Promise<Order[] | null> {
+  return apiGet<Order[]>(`/orders/group/${encodeURIComponent(groupId)}`);
 }

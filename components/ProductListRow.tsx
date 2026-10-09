@@ -8,8 +8,9 @@
 import Link from "next/link";
 import { ImageOff, ShoppingCart, Check } from "lucide-react";
 import { useState } from "react";
-import type { Product } from "@/lib/api";
+import { resolveImageUrl, type Product } from "@/lib/api";
 import { useCart } from "@/lib/cart-context";
+import FavoriteButton from "@/components/FavoriteButton";
 
 function formatPrice(value: number) {
   return new Intl.NumberFormat("ru-RU").format(value) + " ₽";
@@ -29,9 +30,14 @@ export default function ProductListRow({ product }: { product: Product }) {
     <div className="flex gap-4 rounded-card border border-border bg-white p-4 hover:border-brand/40 transition-colors">
       <Link
         href={`/product/${product.slug}`}
-        className="relative shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-surface flex items-center justify-center text-muted/50"
+        className="relative shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-surface flex items-center justify-center text-muted/50 overflow-hidden"
       >
-        <ImageOff size={16} strokeWidth={1.5} />
+        {product.images?.[0] ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={resolveImageUrl(product.images[0])} alt={product.name} className="h-full w-full object-cover" />
+        ) : (
+          <ImageOff size={16} strokeWidth={1.5} />
+        )}
         {product.badge && (
           <span className="absolute -top-1.5 -left-1.5 bg-accent text-white text-[9px] font-semibold px-1 py-0.5 rounded-full leading-none">
             {product.badge}
@@ -43,11 +49,18 @@ export default function ProductListRow({ product }: { product: Product }) {
         {product.article && (
           <p className="text-xs text-muted mb-0.5">Артикул: {product.article}</p>
         )}
-        <Link href={`/product/${product.slug}`}>
-          <p className="font-medium text-sm leading-snug mb-1.5 text-ink hover:text-brand">
-            {product.name}
-          </p>
-        </Link>
+        <div className="flex items-start gap-1.5">
+          <Link href={`/product/${product.slug}`} className="min-w-0">
+            <p className="font-medium text-sm leading-snug mb-1.5 text-ink hover:text-brand">
+              {product.name}
+            </p>
+          </Link>
+          <FavoriteButton
+            slug={product.slug}
+            size={14}
+            className="shrink-0 h-6 w-6 rounded-full flex items-center justify-center hover:bg-surface transition-colors"
+          />
+        </div>
         {product.inStock ? (
           <p className="text-xs text-green-700 font-medium mb-1">В наличии</p>
         ) : (

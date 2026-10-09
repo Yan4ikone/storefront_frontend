@@ -26,6 +26,9 @@ interface AuthContextValue {
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
   logout: () => void;
+  // Перечитать пользователя с сервера — после правок профиля (lib/auth-api.ts
+  // updateMe) и т.п., чтобы шапка/кабинет сразу показали новые данные.
+  refresh: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -104,8 +107,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setStatus("anonymous");
   };
 
+  const refresh = async () => {
+    const token = readToken();
+    if (!token) return;
+    try {
+      setUser(await getMe(token));
+    } catch {
+      // Токен протух между действиями — молча оставляем как было, следующий
+      // защищённый запрос всё равно получит 401 и разлогинит явно.
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ status, user, login, register, logout }}>
+    <AuthContext.Provider value={{ status, user, login, register, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   );

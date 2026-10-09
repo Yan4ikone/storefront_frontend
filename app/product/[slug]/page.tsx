@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProductCard from "@/components/ProductCard";
 import ProductActions from "@/components/ProductActions";
-import { ImageOff } from "lucide-react";
+import ProductGallery from "@/components/ProductGallery";
+import FavoriteButton from "@/components/FavoriteButton";
 import { getCategoryBySlug, getProductBySlug } from "@/lib/api";
 
 export async function generateMetadata({
@@ -37,22 +38,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
       <div className="max-w-container mx-auto px-4 py-8">
         <div className="grid md:grid-cols-2 gap-10">
-          {/* Галерея — плейсхолдер вместо реальных фото */}
-          <div>
-            <div className="aspect-square rounded-card bg-surface border border-border flex items-center justify-center text-muted/50 mb-3">
-              <ImageOff size={48} strokeWidth={1.25} />
-            </div>
-            <div className="grid grid-cols-4 gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="aspect-square rounded-lg bg-surface border border-border flex items-center justify-center text-muted/30"
-                >
-                  <ImageOff size={20} strokeWidth={1.25} />
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Галерея — реальные фото товара (см. Product.images), либо плейсхолдер */}
+          <ProductGallery images={product.images} name={product.name} />
 
           {/* Информация о товаре */}
           <div>
@@ -76,6 +63,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
                   Ожидается: {product.expectedDelivery}
                 </span>
               )}
+              <FavoriteButton slug={product.slug} className="ml-auto h-9 w-9 rounded-full border border-border flex items-center justify-center hover:border-brand transition-colors" size={17} />
             </div>
             <h1 className="text-2xl font-bold mb-1">{product.name}</h1>
             {product.article && (

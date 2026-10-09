@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
-import { Plus, Trash2 } from "lucide-react";
-import { getCategories, type AdminCategory } from "@/lib/admin-api";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { ImageOff, Plus, Trash2, Upload, X } from "lucide-react";
+import {
+  getCategories,
+  uploadProductImage,
+  deleteProductImage,
+  AdminApiError,
+  type AdminCategory,
+} from "@/lib/admin-api";
+import { resolveImageUrl } from "@/lib/api";
 
 export interface ProductSpecValue {
   label: string;
@@ -35,14 +42,98 @@ export interface ProductFormValues {
 interface ProductFormProps {
   mode: "create" | "edit";
   initial?: ProductFormValues;
+  // Фото можно загружать только у уже существующего товара (slug нужен серверу
+  // как ключ) — поэтому передаются отдельно, а не как часть ProductFormValues,
+  // и секция загрузки показывается только в режиме "edit" (см. ниже).
+  initialImages?: string[];
   submitting?: boolean;
   error?: string | null;
   onSubmit: (values: ProductFormValues) => void;
 }
 
+// Автоматический ресайз/обрезка — на сервере (см. AdminCatalogService.addProductImage,
+// пользователь выбрал этот вариант вместо текстовой подсказки о размере): что
+// бы ни загрузили, бэкенд сам приводит фото к единому квадрату 1200×1200.
+function ProductImagesManager({ slug, initialImages }: { slug: string; initialImages: string[] }) {
+  const [images, setImages] = useState(initialImages);
+  const [uploading, setUploading] = useState(false);
+  const [imagesError, setImagesError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setImagesError(null);
+    try {
+      const updated = await uploadProductImage(slug, file);
+      setImages(updated.images);
+    } catch (err) {
+      setImagesError(err instanceof AdminApiError ? err.message : "Не удалось загрузить фото");
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
+  const handleDelete = async (path: string) => {
+    setImagesError(null);
+    try {
+      const updated = await deleteProductImage(slug, path);
+      setImages(updated.images);
+    } catch (err) {
+      setImagesError(err instanceof AdminApiError ? err.message : "Не удалось удалить фото");
+    }
+  };
+
+  return (
+    <div>
+      <label className="block text-sm font-medium mb-1.5">Фото товара</label>
+      <p className="text-xs text-muted mb-2">
+        Любое фото автоматически обрезается и масштабируется сервером до квадрата
+        1200×1200 — можно загружать как есть, без предварительной подготовки.
+        Первое фото в списке — обложка карточки.
+      </p>
+      <div className="flex flex-wrap gap-3 mb-2">
+        {images.map((path) => (
+          <div key={path} className="relative h-24 w-24 rounded-lg border border-border overflow-hidden group">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={resolveImageUrl(path)} alt="" className="h-full w-full object-cover" />
+            <button
+              type="button"
+              onClick={() => handleDelete(path)}
+              aria-label="Удалить фото"
+              className="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <X size={13} />
+            </button>
+          </div>
+        ))}
+        <label
+          className={`h-24 w-24 rounded-lg border border-dashed border-border flex flex-col items-center justify-center text-muted cursor-pointer hover:border-brand transition-colors ${
+            uploading ? "opacity-50 pointer-events-none" : ""
+          }`}
+        >
+          {uploading ? <ImageOff size={18} /> : <Upload size={18} />}
+          <span className="text-[10px] mt-1">{uploading ? "Загрузка…" : "Добавить"}</span>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </label>
+      </div>
+      {imagesError && <p className="text-xs text-red-600">{imagesError}</p>}
+    </div>
+  );
+}
+
 export default function ProductForm({
   mode,
   initial,
+  initialImages,
   submitting,
   error,
   onSubmit,
@@ -259,6 +350,14 @@ export default function ProductForm({
           className="w-full rounded-card border border-border px-3.5 py-2.5 text-sm outline-none focus:border-brand"
         />
       </div>
+
+      {mode === "edit" && initial?.slug ? (
+        <ProductImagesManager slug={initial.slug} initialImages={initialImages ?? []} />
+      ) : (
+        <p className="text-xs text-muted bg-surface rounded-card px-3.5 py-2.5">
+          Фото можно будет добавить сразу после создания товара — на странице редактирования.
+        </p>
+      )}
 
       <div>
         <div className="flex items-center justify-between mb-1.5">

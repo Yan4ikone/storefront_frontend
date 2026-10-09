@@ -62,6 +62,7 @@ export default function EditProductPage() {
       <h1 className="text-xl font-bold mb-6">Редактировать товар «{product.name}»</h1>
       <ProductForm
         mode="edit"
+        initialImages={product.images}
         initial={{
           slug: product.slug,
           name: product.name,

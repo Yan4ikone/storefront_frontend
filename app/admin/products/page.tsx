@@ -8,8 +8,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Pencil, Trash2, Plus, ChevronDown, ChevronRight, Search } from "lucide-react";
+import { ImageOff, Pencil, Trash2, Plus, ChevronDown, ChevronRight, Search } from "lucide-react";
 import { getProducts, deleteProduct, AdminApiError, type AdminProduct } from "@/lib/admin-api";
+import { resolveImageUrl } from "@/lib/api";
 import { getCategoryIcon } from "@/lib/icon-map";
 
 interface CategoryGroup {
@@ -160,6 +161,7 @@ export default function AdminProductsPage() {
                   <table className="w-full text-sm border-t border-border">
                     <thead className="bg-surface text-left text-muted">
                       <tr>
+                        <th className="px-4 py-3 font-medium" />
                         <th className="px-4 py-3 font-medium">Название</th>
                         <th className="px-4 py-3 font-medium">Артикул</th>
                         <th className="px-4 py-3 font-medium">Цена</th>
@@ -170,6 +172,16 @@ export default function AdminProductsPage() {
                     <tbody>
                       {group.products.map((product) => (
                         <tr key={product.slug} className="border-t border-border">
+                          <td className="px-4 py-3">
+                            <div className="h-9 w-9 rounded-md bg-surface flex items-center justify-center text-muted/50 overflow-hidden">
+                              {product.images?.[0] ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={resolveImageUrl(product.images[0])} alt="" className="h-full w-full object-cover" />
+                              ) : (
+                                <ImageOff size={14} strokeWidth={1.5} />
+                              )}
+                            </div>
+                          </td>
                           <td className="px-4 py-3 font-medium">{product.name}</td>
                           <td className="px-4 py-3 text-muted">{product.article ?? "—"}</td>
                           <td className="px-4 py-3 text-muted">

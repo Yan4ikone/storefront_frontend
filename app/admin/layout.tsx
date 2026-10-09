@@ -9,7 +9,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Folder, Package, ShoppingBag, BarChart3, LogOut } from "lucide-react";
+import { LayoutGrid, Folder, Package, ShoppingBag, BarChart3, LogOut, Users } from "lucide-react";
 import { AdminAuthProvider, useAdminAuth } from "@/lib/admin-auth";
 import { AdminApiError } from "@/lib/admin-api";
 
@@ -77,6 +77,7 @@ const NAV_ITEMS = [
   { href: "/admin/categories", label: "Разделы", icon: Folder },
   { href: "/admin/products", label: "Товары", icon: Package },
   { href: "/admin/orders", label: "Заказы", icon: ShoppingBag },
+  { href: "/admin/customers", label: "Покупатели", icon: Users },
   { href: "/admin/reports", label: "Отчёты", icon: BarChart3 },
 ];
 

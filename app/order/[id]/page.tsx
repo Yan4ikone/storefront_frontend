@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import OrderProgress from "@/components/OrderProgress";
 import { getOrder } from "@/lib/api";
 
 function formatPrice(value: number) {
@@ -25,18 +26,32 @@ export default async function OrderPage({ params }: { params: { id: string } }) 
   return (
     <main>
       <Breadcrumbs
-        items={[{ label: "Главная", href: "/" }, { label: `Заказ №${order.id.slice(0, 8)}` }]}
+        items={[{ label: "Главная", href: "/" }, { label: `Заказ №${order.number}` }]}
       />
 
       <div className="max-w-container mx-auto px-4 py-8 max-w-2xl">
         <div className="rounded-card border border-border bg-white p-6 sm:p-8 text-center mb-6">
           <CheckCircle2 size={44} className="mx-auto text-green-600 mb-3" strokeWidth={1.5} />
-          <h1 className="text-xl font-bold mb-1">Заказ №{order.id.slice(0, 8)} принят</h1>
-          <p className="text-sm text-muted">
+          <h1 className="text-xl font-bold mb-1">Заказ №{order.number} принят</h1>
+          <p className="text-sm text-muted mb-4">
             Спасибо, {order.customerName}! Мы свяжемся с вами по телефону {order.phone}
             {" "}
-            для подтверждения и оплаты.
+            для подтверждения и оплаты. Номер заказа — №{order.number}, назовите его, если
+            будете связываться с нами.
           </p>
+          <div className="max-w-xs mx-auto">
+            <OrderProgress status={order.status} />
+          </div>
+          {order.groupId && (
+            <p className="text-xs text-muted mt-4">
+              Товары "под заказ" из этой покупки оформлены отдельным заказом —
+              {" "}
+              <Link href={`/order/group/${order.groupId}`} className="text-brand hover:text-brand-dark font-medium">
+                посмотреть оба заказа
+              </Link>
+              .
+            </p>
+          )}
         </div>
 
         <div className="rounded-card border border-border bg-white p-5 mb-6">

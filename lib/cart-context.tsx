@@ -21,6 +21,13 @@ export interface CartItem {
   compatibility: string;
   price: number;
   qty: number;
+  // Снимок на момент добавления в корзину — используется для бейджа
+  // "в наличии"/"под заказ" и для разбивки заказа на чекауте (см.
+  // app/checkout/page.tsx). Если наличие товара поменяется в каталоге после
+  // того, как его положили в корзину, это не отражается "на лету" — корзина
+  // живёт в localStorage, а не синхронизируется с сервером постоянно.
+  inStock: boolean;
+  expectedDelivery?: string | null;
 }
 
 interface CartContextValue {
@@ -77,6 +84,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
           compatibility: product.compatibility,
           price: product.price,
           qty,
+          inStock: product.inStock,
+          expectedDelivery: product.expectedDelivery,
         },
       ];
     });

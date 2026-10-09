@@ -9,6 +9,7 @@ import { ShoppingCart, Check } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "@/lib/api";
 import { useCart } from "@/lib/cart-context";
+import FavoriteButton from "@/components/FavoriteButton";
 
 function formatPrice(value: number) {
   return new Intl.NumberFormat("ru-RU").format(value) + " ₽";
@@ -36,12 +37,19 @@ function ProductTableRow({ product }: { product: Product }) {
         )}
       </td>
       <td className="px-4 py-3">
-        <Link
-          href={`/product/${product.slug}`}
-          className="text-sm font-medium text-ink hover:text-brand"
-        >
-          {product.name}
-        </Link>
+        <div className="flex items-center gap-1.5">
+          <Link
+            href={`/product/${product.slug}`}
+            className="text-sm font-medium text-ink hover:text-brand"
+          >
+            {product.name}
+          </Link>
+          <FavoriteButton
+            slug={product.slug}
+            size={13}
+            className="shrink-0 h-6 w-6 rounded-full flex items-center justify-center hover:bg-surface transition-colors"
+          />
+        </div>
         <p className="text-xs text-muted mt-0.5">{product.compatibility}</p>
       </td>
       <td className="px-4 py-3 whitespace-nowrap">

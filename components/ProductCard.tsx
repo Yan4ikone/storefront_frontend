@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { ImageOff, ShoppingCart, Check } from "lucide-react";
 import { useState } from "react";
-import type { Product } from "@/lib/api";
+import { resolveImageUrl, type Product } from "@/lib/api";
 import { useCart } from "@/lib/cart-context";
+import FavoriteButton from "@/components/FavoriteButton";
 
 function formatPrice(value: number) {
   return new Intl.NumberFormat("ru-RU").format(value) + " ₽";
@@ -23,8 +24,13 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group rounded-card border border-border bg-white p-4 flex flex-col hover:shadow-sm hover:border-brand/40 transition-all">
       <Link href={`/product/${product.slug}`} className="block">
-        <div className="relative aspect-square rounded-lg bg-surface flex items-center justify-center text-muted/50 mb-3">
-          <ImageOff size={28} strokeWidth={1.5} />
+        <div className="relative aspect-square rounded-lg bg-surface flex items-center justify-center text-muted/50 mb-3 overflow-hidden">
+          {product.images?.[0] ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={resolveImageUrl(product.images[0])} alt={product.name} className="h-full w-full object-cover" />
+          ) : (
+            <ImageOff size={28} strokeWidth={1.5} />
+          )}
           {product.badge && (
             <span className="absolute top-2 left-2 bg-accent text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
               {product.badge}
@@ -35,6 +41,10 @@ export default function ProductCard({ product }: { product: Product }) {
               Под заказ
             </span>
           )}
+          <FavoriteButton
+            slug={product.slug}
+            className="absolute bottom-2 right-2 h-8 w-8 rounded-full bg-white/90 border border-border flex items-center justify-center hover:border-brand transition-colors"
+          />
         </div>
 
         <p className="text-xs text-muted mb-1">{product.compatibility}</p>

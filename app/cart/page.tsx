@@ -49,6 +49,17 @@ export default function CartPage() {
                       {item.name}
                     </Link>
                     <p className="text-xs text-muted mt-0.5">{item.compatibility}</p>
+                    <span
+                      className={`inline-block mt-1 text-[11px] font-medium px-1.5 py-0.5 rounded-full ${
+                        item.inStock ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"
+                      }`}
+                    >
+                      {item.inStock
+                        ? "В наличии"
+                        : item.expectedDelivery
+                          ? `Под заказ · ожидается ${item.expectedDelivery}`
+                          : "Под заказ"}
+                    </span>
                   </div>
 
                   <div className="flex items-center rounded-card border border-border">

@@ -4,6 +4,16 @@
 // покупателей), но доступ к самой админке даёт только роль admin/manager
 // (см. JwtAuthGuard + RolesGuard на бэкенде, проверяется через /admin/session).
 
+import {
+  ORDER_STATUSES,
+  ORDER_STATUS_LABELS,
+  ORDER_PROGRESS_STATUSES,
+  type OrderStatus,
+} from "./api";
+
+export { ORDER_STATUSES, ORDER_STATUS_LABELS, ORDER_PROGRESS_STATUSES };
+export type { OrderStatus };
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001/api/v1";
 
@@ -222,6 +232,8 @@ export interface AdminProduct {
   specs: AdminProductSpec[];
   inStock: boolean;
   expectedDelivery: string | null;
+  // Пути вида "/uploads/products/xxx.webp" — см. resolveImageUrl в lib/api.ts.
+  images: string[];
   createdAt: string;
   updatedAt: string;
   // Есть только в ответе списка (GET /admin/catalog/products), т.к. сервис
@@ -301,17 +313,42 @@ export function deleteProduct(slug: string): Promise<{ ok: boolean }> {
   });
 }
 
+// --- Фото товара ---
+// Сервер сам обрезает/масштабирует фото до единого размера (пользователь
+// выбрал автоматический ресайз вместо текстовой подсказки о размере) — здесь
+// просто отправляем файл как есть.
+export async function uploadProductImage(slug: string, file: File): Promise<AdminProduct> {
+  const token = getToken();
+  const formData = new FormData();
+  formData.append("file", file);
+
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE_URL}/admin/catalog/products/${encodeURIComponent(slug)}/images`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token ?? ""}` },
+      body: formData,
+    });
+  } catch {
+    throw new AdminApiError("Не удалось связаться с сервером. Бэкенд запущен?", 0);
+  }
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    const message = Array.isArray(body?.message) ? body.message.join(", ") : (body?.message ?? "Не удалось загрузить фото");
+    throw new AdminApiError(message, res.status);
+  }
+  return res.json();
+}
+
+export function deleteProductImage(slug: string, imagePath: string): Promise<AdminProduct> {
+  return adminFetch<AdminProduct>(`/admin/catalog/products/${encodeURIComponent(slug)}/images`, {
+    method: "DELETE",
+    body: JSON.stringify({ path: imagePath }),
+  });
+}
+
 // --- Заказы ---
-
-export const ORDER_STATUSES = ["new", "confirmed", "done", "cancelled"] as const;
-export type OrderStatus = (typeof ORDER_STATUSES)[number];
-
-export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  new: "Новый",
-  confirmed: "Подтверждён",
-  done: "Выполнен",
-  cancelled: "Отменён",
-};
 
 export interface AdminOrderItem {
   id: string;
@@ -319,11 +356,15 @@ export interface AdminOrderItem {
   name: string;
   price: number;
   qty: number;
+  inStock: boolean;
+  product?: { images: string[] } | null;
 }
 
 export interface AdminOrder {
   id: string;
-  status: string;
+  number: number;
+  status: OrderStatus;
+  cancellationRequested: boolean;
   customerName: string;
   phone: string;
   email: string | null;
@@ -333,6 +374,7 @@ export interface AdminOrder {
   itemsTotal: number;
   items: AdminOrderItem[];
   createdAt: string;
+  groupId: string | null;
 }
 
 export function getOrders(): Promise<AdminOrder[]> {
@@ -343,6 +385,39 @@ export function updateOrderStatus(id: string, status: OrderStatus): Promise<Admi
   return adminFetch<AdminOrder>(`/admin/orders/${encodeURIComponent(id)}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
+  });
+}
+
+// Подтвердить (approve: true -> статус "cancelled") или отклонить
+// (approve: false -> запрос снимается, статус не трогаем) просьбу покупателя
+// отменить уже подтверждённый заказ.
+export function resolveCancellation(id: string, approve: boolean): Promise<AdminOrder> {
+  return adminFetch<AdminOrder>(`/admin/orders/${encodeURIComponent(id)}/cancellation`, {
+    method: "PATCH",
+    body: JSON.stringify({ approve }),
+  });
+}
+
+// --- Покупатели и баланс (заглушка пополнения, см. User.balance на бэкенде) ---
+
+export interface AdminCustomer {
+  id: string;
+  email: string | null;
+  phone: string | null;
+  name: string | null;
+  role: "customer" | "manager" | "admin";
+  balance: number;
+  createdAt: string;
+}
+
+export function getCustomers(): Promise<AdminCustomer[]> {
+  return adminFetch<AdminCustomer[]>("/admin/users");
+}
+
+export function setCustomerBalance(id: string, balance: number): Promise<AdminCustomer> {
+  return adminFetch<AdminCustomer>(`/admin/users/${encodeURIComponent(id)}/balance`, {
+    method: "PATCH",
+    body: JSON.stringify({ balance }),
   });
 }
 

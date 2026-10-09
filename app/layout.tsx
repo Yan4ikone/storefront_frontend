@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
 import { AuthProvider } from "@/lib/auth-context";
+import { FavoritesProvider } from "@/lib/favorites-context";
 import SiteChrome from "@/components/SiteChrome";
 import { getCategories } from "@/lib/api";
 
@@ -23,7 +24,9 @@ export default async function RootLayout({
       <body>
         <CartProvider>
           <AuthProvider>
-            <SiteChrome categories={categories}>{children}</SiteChrome>
+            <FavoritesProvider>
+              <SiteChrome categories={categories}>{children}</SiteChrome>
+            </FavoritesProvider>
           </AuthProvider>
         </CartProvider>
       </body>
