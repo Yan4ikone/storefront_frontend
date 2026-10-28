@@ -25,12 +25,14 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     Promise.all([getCategories(), getProducts(), getOrders()])
       .then(([categories, products, orders]) => {
-        const ordersByStatus = {
+        const ordersByStatus: Record<OrderStatus, number> = {
           new: 0,
           confirmed: 0,
-          done: 0,
+          assembled: 0,
+          shipped: 0,
+          delivered: 0,
           cancelled: 0,
-        } as Record<OrderStatus, number>;
+        };
         for (const order of orders) {
           const status = order.status as OrderStatus;
           if (status in ordersByStatus) ordersByStatus[status] += 1;
