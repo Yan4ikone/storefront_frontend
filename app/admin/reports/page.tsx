@@ -46,7 +46,9 @@ function formatDateTime(iso: string) {
 const STATUS_STYLES: Record<OrderStatus, string> = {
   new: "bg-blue-100 text-blue-700",
   confirmed: "bg-amber-100 text-amber-700",
-  done: "bg-green-100 text-green-700",
+  assembled: "bg-amber-100 text-amber-700",
+  shipped: "bg-sky-100 text-sky-700",
+  delivered: "bg-green-100 text-green-700",
   cancelled: "bg-red-100 text-red-700",
 };
 
