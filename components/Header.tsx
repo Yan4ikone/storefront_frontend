@@ -16,23 +16,20 @@ export default function Header({ categories }: { categories: Category[] }) {
       <div className="hidden md:block bg-surface text-sm text-muted">
         <div className="max-w-container mx-auto px-4 flex items-center justify-between h-9">
           <div className="flex gap-5">
-            <Link href="/about" className="hover:text-ink">
+            <a href="#" className="hover:text-ink">
               О магазине
-            </Link>
-            <Link href="/delivery" className="hover:text-ink">
+            </a>
+            <a href="#" className="hover:text-ink">
               Доставка и оплата
-            </Link>
-            <Link href="/warranty" className="hover:text-ink">
+            </a>
+            <a href="#" className="hover:text-ink">
               Гарантия
-            </Link>
-            <Link href="/contacts" className="hover:text-ink">
-              Контакты
-            </Link>
+            </a>
           </div>
           <div className="flex items-center gap-2">
             <Phone size={14} />
-            <a href="tel:+79014922269" className="hover:text-ink">
-              +7 (901) 492-22-69
+            <a href="tel:+70000000000" className="hover:text-ink">
+              +7 (000) 000-00-00
             </a>
           </div>
         </div>
@@ -42,27 +39,23 @@ export default function Header({ categories }: { categories: Category[] }) {
       <div className="max-w-container mx-auto px-4 py-4 flex items-center gap-4 md:gap-8">
         <Link href="/" className="shrink-0 flex items-baseline gap-1">
           <span className="text-2xl font-extrabold tracking-tight text-brand">
-            ScreenHub
+            МобДетали
           </span>
           <span className="hidden sm:inline text-xs text-muted">.ru</span>
         </Link>
 
         <div className="hidden md:flex flex-1 items-center">
-          <form action="/search" className="relative w-full">
+          <div className="relative w-full">
             <input
               type="text"
-              name="q"
               placeholder="Поиск по названию, артикулу или модели устройства…"
               className="w-full rounded-card border border-border bg-surface px-4 py-2.5 pr-11 text-sm outline-none focus:border-brand transition-colors"
             />
-            <button
-              type="submit"
-              aria-label="Найти"
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-brand"
-            >
-              <Search size={18} />
-            </button>
-          </form>
+            <Search
+              size={18}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted"
+            />
+          </div>
         </div>
 
         <div className="flex items-center gap-4 md:gap-5 ml-auto md:ml-0">
@@ -94,21 +87,17 @@ export default function Header({ categories }: { categories: Category[] }) {
 
       {/* Поиск для мобильной версии */}
       <div className="md:hidden px-4 pb-3">
-        <form action="/search" className="relative w-full">
+        <div className="relative w-full">
           <input
             type="text"
-            name="q"
             placeholder="Поиск по каталогу…"
             className="w-full rounded-card border border-border bg-surface px-4 py-2.5 pr-11 text-sm outline-none focus:border-brand transition-colors"
           />
-          <button
-            type="submit"
-            aria-label="Найти"
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted hover:text-brand"
-          >
-            <Search size={18} />
-          </button>
-        </form>
+          <Search
+            size={18}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted"
+          />
+        </div>
       </div>
 
       {/* Навигация по каталогу */}
