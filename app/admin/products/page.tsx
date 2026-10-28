@@ -8,7 +8,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ImageOff, Pencil, Trash2, Plus, ChevronDown, ChevronRight, Search } from "lucide-react";
+import { ImageOff, Pencil, Trash2, Plus, ChevronDown, ChevronRight, Search, FileSpreadsheet } from "lucide-react";
 import { getProducts, deleteProduct, AdminApiError, type AdminProduct } from "@/lib/admin-api";
 import { resolveImageUrl } from "@/lib/api";
 import { getCategoryIcon } from "@/lib/icon-map";
@@ -101,13 +101,22 @@ export default function AdminProductsPage() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <h1 className="text-xl font-bold">Товары</h1>
-        <Link
-          href="/admin/products/new"
-          className="flex items-center gap-2 h-10 px-4 rounded-card bg-brand hover:bg-brand-dark transition-colors text-white text-sm font-semibold"
-        >
-          <Plus size={16} />
-          Добавить товар
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/products/import"
+            className="flex items-center gap-2 h-10 px-4 rounded-card border border-border hover:border-brand transition-colors text-sm font-medium"
+          >
+            <FileSpreadsheet size={16} />
+            Импорт из Excel
+          </Link>
+          <Link
+            href="/admin/products/new"
+            className="flex items-center gap-2 h-10 px-4 rounded-card bg-brand hover:bg-brand-dark transition-colors text-white text-sm font-semibold"
+          >
+            <Plus size={16} />
+            Добавить товар
+          </Link>
+        </div>
       </div>
 
       <div className="relative mb-6 max-w-sm">
